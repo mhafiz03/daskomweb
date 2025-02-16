@@ -10,9 +10,7 @@ npm-debug.log
 yarn-error.log
 laravel-echo-server.json
 laravel-echo-server.lock
-*.lock
 .env
-*-lock.json
 vhost.conf
 init_db.sql
 *.sh

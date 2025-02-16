@@ -34,3 +34,4 @@ Berikut link nya :
 - [Soediponegoro [DIP]](https://soedipo.github.io/)
 - [Vincentius Adisurya Fransisco Antu [CEN]](https://vincentiusantu.github.io/)
 - [Aliza Nurfitrian Meizahra [ALL]](https://allzanrv3.vercel.app/)
+- [Muhammad Hafiz [MHZ]](https://mhafiz03.github.io/)

@@ -1,43 +1,39 @@
-FROM php:7.3-fpm
+# Need Node JS 14 which is available in Alpine Linux 3.13
+FROM php:7.4-fpm-alpine3.13
 
 # Arguments defined in docker-compose.yml
-ARG user
-ARG uid
+# ARG user
+# ARG uid
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
+RUN apk add --no-cache \
     libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+    libzip-dev \
+    oniguruma-dev \
+    sqlite \
+    sqlite-dev \
+    npm \
+    nginx
+    
+RUN mkdir -p /run/nginx
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Get latest Composer
-COPY --from=composer:2.1 /usr/bin/composer /usr/bin/composer
-
-# Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
-
-#install node
-RUN apt-get update &&\
-    apt-get install -y --no-install-recommends gnupg &&\
-    curl -sL https://deb.nodesource.com/setup_16.x | bash - &&\
-    apt-get update &&\
-    apt-get install -y --no-install-recommends nodejs &&\
-    npm config set registry https://registry.npm.taobao.org --global &&\
-    npm install --global gulp-cli
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-USER $user
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+
+# RUN adduser -D -u $uid -G www-data -h /home/$user $user
+# USER $user
+
+CMD sh -c "php-fpm -D && nginx -g 'daemon off;'"
+
+# Needs to manually run after running docker compose up because it's mounted after it
+# RUN chown -R www-data:www-data /var/www/html
+# RUN composer install --optimize-autoloader --no-dev
+# RUN npm install
